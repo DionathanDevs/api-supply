@@ -1,21 +1,21 @@
 class Contrato {
 
 
-    constructor(identificacao, descricao){
-        this.identificacao = identificacao
+    constructor(codigo, descricao){
+        this.codigo = codigo
         this.descricao = descricao
     }
 
-    getIdentificacao(){
-        return this.identificacao
+    getCodigo(){
+        return this.codigo
     }
 
     getDescricao(){
         return this.descricao
     }
 
-    setIdentificacao(identificacao){
-        this.identificacao = identificacao
+    setCodigo(codigo){
+        this.codigo = codigo
     }
 
     setDescricao(descricao){
@@ -26,4 +26,4 @@ class Contrato {
 
 }
 
-export default { Contrato }
+export default Contrato

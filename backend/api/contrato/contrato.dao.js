@@ -1,21 +1,20 @@
+import {pool} from '../../data/conn.js'
+
+
 class ContratoDao {
 
-constructor(conn){
-    this.conn = conn
-}
-
-
+   
 
 async create(contrato){
 
 try {
 
-const pool = this.conn
+const conn = pool
 
-const sql = 'INSERT INTO contratos (codigo, descricao, data_criacao, ativo) VALUES (?, ?, NOW(), ?)'
+const sql = 'INSERT INTO contratos (codigo, descricao) VALUES (?, ?)'
 
 
-const [rows] = await pool.execute(sql, contrato.codigo, contrato.descricao, new Date(), 1)
+const [rows] = await conn.execute(sql, [contrato.codigo, contrato.descricao])
 
 return rows
 
@@ -28,7 +27,28 @@ throw new Error('Nao foi possivel criar o contrato no momento')
 }
 
 
+async findByCodigo(codigo){
+
+    try {
+
+        const sql = 'SELECT codigo from contratos where codigo = (?)'
+
+        const conn = pool
+
+        const [rows] = await conn.execute(sql, [codigo])
+
+        return rows
+
+    }catch(err){
+        
+        throw err
+
+    }
+
+}
+
 
 
 }
 
+export default ContratoDao

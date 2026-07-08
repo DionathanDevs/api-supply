@@ -1,9 +1,11 @@
-export const contratoControllerCreate = (req, res) => {
+import { contratoServiceCreate } from './contrato.service.js'
+
+export const contratoControllerCreate = async (req, res) => {
 
 const contrato = req.body;
 
 try {
-// tratar com Zod antes, pra limpar os dados
+
 const criarContrato = await contratoServiceCreate(contrato)
 
 if(criarContrato){
