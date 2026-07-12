@@ -1,18 +1,22 @@
-import { postCreateFluxo } from '../fluxo/fluxo.controller.js'
+import { criarProcessoServiceContrato } from './contrato/processo.contrato.service.js'
 
-const criarProcessoService = async(req, fluxo) =>{
-
+export const criarProcessoService = async(contrato, fluxo, status) => {
 
 try{
 
-const fluxoIniciado = await postCreateFluxo(req, fluxo)
+if(!fluxo){
 
-if(!fluxoIniciado){
-    throw new Error('Erro ao iniciar fluxo.')
+throw new Error('Fluxo nao informado!')
+
 }
 
-return fluxoIniciado
+const criarProcessoContrato = await criarProcessoServiceContrato(contrato, fluxo, status)
 
+if(!criarProcessoContrato){
+ throw new Error('Erro ao criar processo')
+}
+
+return criarProcessoContrato
 
 }catch(err){
     throw err

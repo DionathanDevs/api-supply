@@ -1,9 +1,11 @@
-
+import { criarProcessoService } from './processo.service.js'
 
 
 export const criarProcesso = async(req, res) => {
 
-    if(!req.fluxo){
+    const { contrato, fluxo, status} = req.body
+
+    if(!fluxo){
         return res.status(404).json({
             success: false,
             message:"Fluxo nao enviado!"
@@ -12,12 +14,18 @@ export const criarProcesso = async(req, res) => {
 
     try{
 
-        const fluxo = req.fluxo
+        const processoServiceCriado = await criarProcessoService(contrato, fluxo, status)
 
-        await criarProcessoService(req, fluxo)
+        if(!processoServiceCriado){
+            throw new Error('Erro ao criar processo')
+        }
 
+
+        return res.status(201).json({
+            success: true,
+            processoServiceCriado
+        })
         
-
     }catch(err){
         return res.status(404).json({
             success: false,
