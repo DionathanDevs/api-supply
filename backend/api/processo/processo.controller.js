@@ -1,37 +1,35 @@
-import { criarProcessoService } from './processo.service.js'
+import { criarProcessoService } from "./processo.service.js";
 
+export const criarProcesso = async (req, res) => {
+  const { contrato, fluxo, status, item } = req.body;
 
-export const criarProcesso = async(req, res) => {
+  if (!fluxo) {
+    return res.status(404).json({
+      success: false,
+      message: "Fluxo nao enviado!",
+    });
+  }
 
-    const { contrato, fluxo, status} = req.body
+  try {
+    const processoServiceCriado = await criarProcessoService(
+      contrato,
+      fluxo,
+      status,
+      item,
+    );
 
-    if(!fluxo){
-        return res.status(404).json({
-            success: false,
-            message:"Fluxo nao enviado!"
-        })
+    if (!processoServiceCriado) {
+      throw new Error("Erro ao criar processo");
     }
 
-    try{
-
-        const processoServiceCriado = await criarProcessoService(contrato, fluxo, status)
-
-        if(!processoServiceCriado){
-            throw new Error('Erro ao criar processo')
-        }
-
-
-        return res.status(201).json({
-            success: true,
-            processoServiceCriado
-        })
-        
-    }catch(err){
-        return res.status(404).json({
-            success: false,
-            message: err.message || 'Erro inesperado, contate o suporte.'
-        })
-    }
-
-
-}
+    return res.status(201).json({
+      success: true,
+      processoServiceCriado,
+    });
+  } catch (err) {
+    return res.status(404).json({
+      success: false,
+      message: err.message || "Erro inesperado, contate o suporte.",
+    });
+  }
+};

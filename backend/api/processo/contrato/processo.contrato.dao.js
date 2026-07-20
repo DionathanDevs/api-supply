@@ -1,41 +1,62 @@
-import { pool } from "../../../data/conn.js"
+import { pool } from "../../../data/conn.js";
 
 class ProcessoContratoDAO {
+  async criarProcessoContrato(contrato, fluxo, status) {
+    const conn = pool.getConnection();
 
+    try {
+      (await conn).beginTransaction();
 
-async criarProcessoContrato(contrato, fluxo, status){
+      const sqlCriar = "INSERT INTO processos(fluxo, status) values (?, ?)";
 
-const conn = pool.getConnection()
+      const [rows] = await (await conn).execute(sqlCriar, [fluxo, status]);
 
-try {
-    
-(await conn).beginTransaction()
+      const insertId = rows?.insertId;
 
-const sqlCriar = 'INSERT INTO processos(fluxo, status) values (?, ?)'
+      const sqlVincular =
+        "INSERT INTO contratos_processos(contrato, processo) values (?, ?)";
 
-const [rows] = await (await conn).execute(sqlCriar, [fluxo, status])
+      const [rows2] = await (
+        await conn
+      ).execute(sqlVincular, [contrato, insertId]);
 
-const insertId = rows?.insertId
+      if (!rows2.insertId) {
+        throw new Error("Erro ao vincular processo ao contrato");
+      }
 
-const sqlVincular = 'INSERT INTO contratos_processos(contrato, processo) values (?, ?)'
+      (await conn).commit();
 
-const [rows2] = await (await conn).execute(sqlVincular, [contrato, insertId] )
+      return (rows, rows2);
+    } catch (err) {
+      (await conn).rollback();
+      console.log("erro, rollback rodado");
+      throw err;
+    }
+  }
 
-if(!rows2.insertId){
-    throw new Error('Erro ao vincular processo ao contrato')
+  async vinculaItemContrato(item, contrato, quantidade, valor) {
+    const conn = pool.getConnection();
+
+    try {
+      (await conn).beginTransaction();
+
+      const sqlCriar =
+        "INSERT INTO contrato_itens_vinculados(item, contrato, quantidade, valor) values (?, ?, ?, ?)";
+
+      const [rows] = await (
+        await conn
+      )
+        .execute(sqlCriar, [item, contrato, quantidade, valor])
+        (await conn)
+        .commit();
+
+      return rows;
+    } catch (err) {
+      (await conn).rollback();
+      console.log("erro, rollback rodado");
+      throw err;
+    }
+  }
 }
 
-(await conn).commit()
-
-return rows , rows2
-
-}catch(err){
-    (await conn).rollback()
-    console.log('erro, rollback rodado')
-    throw err
-}
-
-}
-}
-
-export default ProcessoContratoDAO
+export default ProcessoContratoDAO;
